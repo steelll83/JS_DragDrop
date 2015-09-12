@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+	* {
+		-moz-user-select: none;
+		-khtml-user-select: none;
+		-webkit-user-select: none;
+		user-select: none;
+	}
+	.drag {
+		background: yellow;
+		-webkit-border-radius: 5px;
+		-moz-border-radius: 5px;
+		border-radius: 50%;
+		border: 1px solid silver;
+		width: 48px;
+		height: 48px;
+		line-height: 48px;
+		margin: 0 0 10px 0;
+		text-align: center;
+		display: block;
+		background: radial-gradient(#f9e497, #ff510F);
+		z-index: 99;
+	}
+	.drop {
+		position: absolute;
+		background: #DDDDDD;
+		-webkit-border-radius: 10px;
+		-moz-border-radius: 10px;
+		border-radius: 10px;
+		border: 1px solid black;
+		display: block;
+		box-shadow: inset 0 0 30px;
+		align: right;
+		vertical-align: bottom;
+		z-index: 1;
+	}
+</style>
+</head>
+<body>
+	<div class="drag"> </div>
+	<div class="drag"> </div>
+	<div class="drag"> </div>
+	<div class="drag"> </div>
+	<div class="drag"> </div>
+	<div class="drag"> </div>
+	<div class="drag"> </div>
+	<div class="drag"> </div>
+	<div class="drag"> </div>
+	<div class="drag"> </div>
+	<div class="drag"> </div>
+	<div class="drag"> </div>
+	<div class="drag"> </div>
+</body>
+</html>
+<script>
+	function addDivRightBottom(width, height) {
+		var div = document.createElement('div');
+		document.body.appendChild(div);
+		div.className = "drop";
+		div.style.left = document.body.clientWidth - width + 'px';
+		div.style.top =  document.body.scrollHeight - height - 20 + 'px';
+		div.style.width = width + 'px';
+		div.style.height = height + 'px';
+	}
+
+	addDivRightBottom(260, 260);
+
+	var dradAndDrop = (function () {
+		var mdFlag = false,
+			clientRect = {},
+			dragElement;
+		var dropElement = document.getElementsByClassName('drop')[0];
+		var dragCounter = 0, topShift = 0;
+
+		function mouseDown (event) {
+			if (event.target.className != 'drag') return;
+			mdFlag = true;
+			dragElement = event.target;
+			dragElement.style.position = 'absolute';
+			clientRect.offsetY = event.offsetY;
+			clientRect.offsetX = event.offsetX,
+			document.onmousemove = mouseMove;
+			document.onmouseup = mouseUp;
+		}
+
+		function mouseMove (event) {
+			if (!mdFlag) return;
+			dragElement.style.top = event.pageY - clientRect.offsetY + 'px';
+			dragElement.style.left = event.pageX - clientRect.offsetX + 'px';
+		}
+
+		function mouseUp (event) {
+			mdFlag = false;
+			debugger;
+
+			if ((parseInt(dragElement.style.top) >= parseInt(dropElement.style.top)) &&
+			   (parseInt(dragElement.style.left) >= parseInt(dropElement.style.left)+5)) {
+			   		if (dragCounter == 8) {
+			   			//topShift += parseInt(dragElement.style.height);
+			   			topShift += 30;
+			   			dragCounter = 0;
+			   		}
+			   		dragElement.style.width = "30px";
+			   		dragElement.style.height = "30px"
+			   		dragElement.style.top = parseInt(dropElement.style.top) + 10 + topShift + 'px';
+			   		//dragElement.style.left = parseInt(dropElement.style.left) + (dragCounter * parseInt(dragElement.style.width)) + 10 + 'px';
+			   		dragElement.style.left = parseInt(dropElement.style.left) + (dragCounter * 30) + 10 + 'px';
+			   		dragElement.style.webkitTransition = "all 1s ease-out";
+			   		dragElement.style.mozTransition = "all 1s ease-out";
+			   		dragElement.style.transition = "all 1s ease-out";
+			   		dragElement.style.float = "left";
+			   		dragCounter++;
+			   }
+		}
+
+		return {
+			dragElement: function (element) {
+				element.onmousedown = mouseDown;
+			}
+		}
+	}) ();
+
+	dradAndDrop.dragElement(document.body);
+
+</script>
